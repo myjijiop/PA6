@@ -1,5 +1,7 @@
 package com.example.pa6;
 
+import androidx.annotation.NonNull;
+
 public class Note {
     private String title;
     private String content;
@@ -42,5 +44,11 @@ public class Note {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return this.title;
     }
 }
