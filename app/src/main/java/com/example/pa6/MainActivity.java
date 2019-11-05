@@ -9,6 +9,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,14 +58,15 @@ public class MainActivity extends AppCompatActivity {
     private class listViewItemListener implements AdapterView.OnItemClickListener{
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Toast.makeText(getApplicationContext(),"OnItemClickListener",Toast.LENGTH_SHORT).show();
             // takes us to expanded note entry
         }
     }
     private class listViewLongClickListener implements AdapterView.OnItemLongClickListener{
         @Override
         public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-            // set up to delete entries
-            return true; // so the onItemClick() callback is not also called
+            //Toast.makeText(getApplicationContext(),"Loooooong Click",Toast.LENGTH_SHORT).show();
+            return false;
         }
     }
 }
