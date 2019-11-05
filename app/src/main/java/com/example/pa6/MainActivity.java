@@ -5,14 +5,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private Intent intent;
+    private Button noteButton;
+    private ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,14 +25,11 @@ public class MainActivity extends AppCompatActivity {
         MainActivityLayout mainActivityLayout = new MainActivityLayout(this);
 
         // wow im a genius
-        mainActivityLayout.returnButton().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(intent);
-            }
-        });
 
-        // Holy cow im so smart 
+        noteButton = mainActivityLayout.returnButton();
+        noteButton.setOnClickListener(new NoteButtonClicker());
+
+        // Holy cow im so smart
         List<Note> NoteList = new ArrayList<>();
         NoteList.add(new Note("HP and Sorcerer's Stone", "JKR","School"));
         NoteList.add(new Note("Aye whats good","nothing much, wbu","Work"));
@@ -38,12 +39,32 @@ public class MainActivity extends AppCompatActivity {
         // set up an array adapter to be the middleman between our data source
         // (myBooks) and our adapterview (listView)
         ArrayAdapter<Note> arrayAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1, NoteList);
-        mainActivityLayout.returnListView().setAdapter(arrayAdapter);
+        listView = mainActivityLayout.returnListView();
+        listView.setOnItemClickListener(new listViewItemListener());
+        listView.setOnItemLongClickListener(new listViewLongClickListener());
+        listView.setAdapter(arrayAdapter);
 
         // force an update
         arrayAdapter.notifyDataSetChanged();
-
         setContentView(mainActivityLayout);
-
+    }
+    private class NoteButtonClicker implements View.OnClickListener{
+        @Override
+        public void onClick(View v) {
+            startActivity(intent);
+        }
+    }
+    private class listViewItemListener implements AdapterView.OnItemClickListener{
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            // takes us to expanded note entry
+        }
+    }
+    private class listViewLongClickListener implements AdapterView.OnItemLongClickListener{
+        @Override
+        public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+            // set up to delete entries
+            return true; // so the onItemClick() callback is not also called
+        }
     }
 }
