@@ -18,6 +18,8 @@ public class MainActivity extends AppCompatActivity {
     private Intent intent;
     private Button noteButton;
     private ListView listView;
+    private List<Note> NoteList;
+    private ArrayAdapter<Note> arrayAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         noteButton.setOnClickListener(new NoteButtonClicker());
 
         // Holy cow im so smart
-        List<Note> NoteList = new ArrayList<>();
+        NoteList = new ArrayList<>();
         NoteList.add(new Note("HP and Sorcerer's Stone", "JKR","School"));
         NoteList.add(new Note("Aye whats good","nothing much, wbu","Work"));
         NoteList.add(new Note("HP and Chamber of Secrets", "JKR", "Personal"));
@@ -39,20 +41,22 @@ public class MainActivity extends AppCompatActivity {
 
         // set up an array adapter to be the middleman between our data source
         // (myBooks) and our adapterview (listView)
-        ArrayAdapter<Note> arrayAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1, NoteList);
+        arrayAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1, NoteList);
         listView = mainActivityLayout.returnListView();
         listView.setOnItemClickListener(new listViewItemListener());
         listView.setOnItemLongClickListener(new listViewLongClickListener());
         listView.setAdapter(arrayAdapter);
 
         // force an update
-        arrayAdapter.notifyDataSetChanged();
         setContentView(mainActivityLayout);
     }
     private class NoteButtonClicker implements View.OnClickListener{
         @Override
         public void onClick(View v) {
-            startActivity(intent);
+//            startActivity(intent);
+            int noteActivityRequest = 0;
+            startActivityForResult(intent, noteActivityRequest);
+
         }
     }
     private class listViewItemListener implements AdapterView.OnItemClickListener{
@@ -68,5 +72,12 @@ public class MainActivity extends AppCompatActivity {
             //Toast.makeText(getApplicationContext(),"Loooooong Click",Toast.LENGTH_SHORT).show();
             return false;
         }
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        String temp = data.getStringExtra("title");
+        NoteList.add(new Note(temp, "",""));
+        arrayAdapter.notifyDataSetChanged();
+
     }
 }
