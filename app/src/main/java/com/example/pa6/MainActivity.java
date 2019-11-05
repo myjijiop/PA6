@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Toast.makeText(getApplicationContext(),"OnItemClickListener",Toast.LENGTH_SHORT).show();
+            
             // takes us to expanded note entry
         }
     }
