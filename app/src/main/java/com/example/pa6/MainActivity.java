@@ -15,6 +15,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Integer.parseInt;
+
 public class MainActivity extends AppCompatActivity {
     private Intent intent;
     private Button noteButton;
@@ -29,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
         MainActivityLayout mainActivityLayout = new MainActivityLayout(this);
 
         // wow im a genius
-
         noteButton = mainActivityLayout.returnButton();
         noteButton.setOnClickListener(new NoteButtonClicker());
 
@@ -47,18 +48,16 @@ public class MainActivity extends AppCompatActivity {
         listView.setOnItemLongClickListener(new listViewLongClickListener());
         listView.setAdapter(arrayAdapter);
 
-        // force an update
         setContentView(mainActivityLayout);
     }
 
     private class NoteButtonClicker implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-//            startActivity(intent);
+
             int noteActivityRequest = 0;
             intent.putExtra("type", "regular");
             startActivityForResult(intent, noteActivityRequest);
-
         }
     }
 
@@ -66,23 +65,24 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             int editNoteActivityRequest = 1;
-            String selection = parent.getItemAtPosition(position).toString();
-            //Toast.makeText(getApplicationContext(),selection,Toast.LENGTH_SHORT).show();
-            intent.putExtra("type", "edit");
             String content;
             String title;
             int spinner;
-            Note temp = (Note) parent.getItemAtPosition(position);
-            title = temp.getTitle();
-            content = temp.getContent();
-            spinner = temp.getType();
+            int notePosition;
+
+            Note noteSelectedItem = (Note) parent.getItemAtPosition(position);
+            title = noteSelectedItem.getTitle();
+            content = noteSelectedItem.getContent();
+            spinner = noteSelectedItem.getType();
+            notePosition = NoteList.indexOf(noteSelectedItem);
+
             intent.putExtra("spinner", spinner);
             intent.putExtra("content", content);
             intent.putExtra("title", title);
-
+            intent.putExtra("position",notePosition);
+            intent.putExtra("type", "edit");
 
             startActivityForResult(intent, editNoteActivityRequest);
-            // takes us to expanded note entry
         }
     }
 
@@ -96,10 +96,23 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        String noteItemTitle;
+        String noteItemContent;
+        int noteItemSpinner;
+
+        noteItemTitle = data.getStringExtra("title");
+        noteItemContent = data.getStringExtra("content");
+        noteItemSpinner = data.getIntExtra("spinnerLocation",-1);
         if (requestCode == 0) {
-            String temp = data.getStringExtra("title");
-            NoteList.add(new Note(temp, "", -1));
-            arrayAdapter.notifyDataSetChanged();
+            // Comes in here if requestcode was for creating new item
+            NoteList.add(new Note(noteItemTitle, noteItemContent, noteItemSpinner));
+        } if(requestCode == 1){
+            // Comes in here if requestcode was for editing existing Note Item
+            int indexPosition = data.getIntExtra("notePosition",-1);
+            NoteList.get(indexPosition).setTitle(noteItemTitle);
+            NoteList.get(indexPosition).setContent(noteItemContent);
+            NoteList.get(indexPosition).setType(noteItemSpinner);
         }
+        arrayAdapter.notifyDataSetChanged();
     }
 }

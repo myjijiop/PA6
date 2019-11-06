@@ -21,6 +21,7 @@ public class NoteActivity extends AppCompatActivity {
     private EditText contentET;
     private Spinner spinner;
     private Intent intent;
+    private int notePosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,18 +48,19 @@ public class NoteActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         String extraStr = extras.getString("type");
 
+        // Checks to see what kind of Activity start it is
         if(extraStr.equals("edit")){
+            // comes in here if its a edit existing item
             String existingTitle = extras.getString("title");
             String existingContent= extras.getString("content");
             int existingSpinner = extras.getInt("spinner");
 
-            //Toast.makeText(getApplicationContext(),title,Toast.LENGTH_SHORT).show();
+            notePosition = extras.getInt("position");;
             titleET.setText(existingTitle);
             contentET.setText(existingContent);
             spinner.setSelection(existingSpinner);
         } else {
             Toast.makeText(getApplicationContext(),"Regular",Toast.LENGTH_SHORT).show();
-
         }
 
 
@@ -69,6 +71,7 @@ public class NoteActivity extends AppCompatActivity {
                 output.putExtra("title", titleET.getText().toString());
                 output.putExtra("content", contentET.getText().toString());
                 output.putExtra("spinnerLocation", spinner.getSelectedItemPosition());
+                output.putExtra("notePosition",notePosition);
                 setResult(RESULT_OK, output);
                 finish();
             }
