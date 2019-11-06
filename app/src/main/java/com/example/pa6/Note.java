@@ -5,18 +5,18 @@ import androidx.annotation.NonNull;
 public class Note {
     private String title;
     private String content;
-    private String type;
+    private int type;
 
 
     // DVC
     Note(){
         this.title = "";
         this.content= "";
-        this.type = "";
+        this.type = -1;
     }
 
     //EVC
-    Note(String title, String content, String type){
+    Note(String title, String content, int type){
         this.title = title;
         this.content = content;
         this.type = type;
@@ -30,11 +30,11 @@ public class Note {
         this.title = title;
     }
 
-    public String getType() {
+    public int getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(int type) {
         this.type = type;
     }
 

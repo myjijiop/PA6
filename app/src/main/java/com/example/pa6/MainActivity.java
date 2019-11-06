@@ -3,6 +3,7 @@ package com.example.pa6;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -24,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        intent = new Intent(this,NoteActivity.class);
+        intent = new Intent(this, NoteActivity.class);
         MainActivityLayout mainActivityLayout = new MainActivityLayout(this);
 
         // wow im a genius
@@ -34,14 +35,13 @@ public class MainActivity extends AppCompatActivity {
 
         // Holy cow im so smart
         NoteList = new ArrayList<>();
-        NoteList.add(new Note("HP and Sorcerer's Stone", "JKR","School"));
-        NoteList.add(new Note("Aye whats good","nothing much, wbu","Work"));
-        NoteList.add(new Note("HP and Chamber of Secrets", "JKR", "Personal"));
+        NoteList.add(new Note("HP and Sorcerer's Stone", "JKR", 0));
+        NoteList.add(new Note("Aye whats good", "nothing much, wbu", 1));
+        NoteList.add(new Note("HP and Chamber of Secrets", "JKR", 2));
 
 
         // set up an array adapter to be the middleman between our data source
-        // (myBooks) and our adapterview (listView)
-        arrayAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1, NoteList);
+        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, NoteList);
         listView = mainActivityLayout.returnListView();
         listView.setOnItemClickListener(new listViewItemListener());
         listView.setOnItemLongClickListener(new listViewLongClickListener());
@@ -50,35 +50,56 @@ public class MainActivity extends AppCompatActivity {
         // force an update
         setContentView(mainActivityLayout);
     }
-    private class NoteButtonClicker implements View.OnClickListener{
+
+    private class NoteButtonClicker implements View.OnClickListener {
         @Override
         public void onClick(View v) {
 //            startActivity(intent);
             int noteActivityRequest = 0;
+            intent.putExtra("type", "regular");
             startActivityForResult(intent, noteActivityRequest);
 
         }
     }
-    private class listViewItemListener implements AdapterView.OnItemClickListener{
+
+    private class listViewItemListener implements AdapterView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Toast.makeText(getApplicationContext(),"OnItemClickListener",Toast.LENGTH_SHORT).show();
-            
+            int editNoteActivityRequest = 1;
+            String selection = parent.getItemAtPosition(position).toString();
+            //Toast.makeText(getApplicationContext(),selection,Toast.LENGTH_SHORT).show();
+            intent.putExtra("type", "edit");
+            String content;
+            String title;
+            int spinner;
+            Note temp = (Note) parent.getItemAtPosition(position);
+            title = temp.getTitle();
+            content = temp.getContent();
+            spinner = temp.getType();
+            intent.putExtra("spinner", spinner);
+            intent.putExtra("content", content);
+            intent.putExtra("title", title);
+
+
+            startActivityForResult(intent, editNoteActivityRequest);
             // takes us to expanded note entry
         }
     }
-    private class listViewLongClickListener implements AdapterView.OnItemLongClickListener{
+
+    private class listViewLongClickListener implements AdapterView.OnItemLongClickListener {
         @Override
         public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
             //Toast.makeText(getApplicationContext(),"Loooooong Click",Toast.LENGTH_SHORT).show();
             return false;
         }
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        String temp = data.getStringExtra("title");
-        NoteList.add(new Note(temp, "",""));
-        arrayAdapter.notifyDataSetChanged();
-
+        if (requestCode == 0) {
+            String temp = data.getStringExtra("title");
+            NoteList.add(new Note(temp, "", -1));
+            arrayAdapter.notifyDataSetChanged();
+        }
     }
 }
